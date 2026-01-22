@@ -8,6 +8,9 @@
 </head>
 <body>
 
+  <div id="adminMessage" class="admin-message"></div>
+
+
   <!-- Theme Toggle Button -->
   <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
     <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -45,8 +48,10 @@
       <ul class="nav-list">
         <li><a href="index.html" class="nav-link">Back to Shop</a></li>
         <li><a href="admin.html" class="nav-link active">Dashboard</a></li>
-        <li><a href="login.html" class="nav-link">Logout</a></li>
       </ul>
+
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+
     </div>
   </nav>
 
@@ -96,6 +101,14 @@
       </form>
 
       <hr class="divider">
+
+      <input
+  type="search"
+  id="adminSearch"
+  placeholder="Search products..."
+  class="admin-search"
+/>
+
 
       <!-- Products List - KEEPING ORIGINAL ID "adminProducts" -->
       <h3 class="section-title">Products List</h3>
