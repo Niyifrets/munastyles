@@ -1,236 +1,126 @@
-/* =====================================================
-   ADMIN.JS — Muna Styles (PRODUCTION)
-===================================================== */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muna Styles | Admin</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
 
-import { db, auth } from "./firebase.js";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  updateDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+  <div id="adminMessage" class="admin-message"></div>
 
-import {
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-/* =======================
-   AUTH GUARD
-======================= */
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
-});
+  <!-- Theme Toggle Button -->
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
 
-/* =======================
-   DOM ELEMENTS
-======================= */
-const form = document.getElementById("productForm");
-const productsList = document.getElementById("adminProducts");
-const logoutBtn = document.getElementById("logoutBtn");
-const adminSearch = document.getElementById("adminSearch");
-const messageBox = document.getElementById("adminMessage");
-
-/* =======================
-   STATE
-======================= */
-let editId = null;
-let productsCache = [];
-
-/* =======================
-   UTIL: MESSAGE HANDLER
-======================= */
-function showMessage(text, type = "success") {
-  messageBox.textContent = text;
-  messageBox.className = `admin-message ${type}`;
-  messageBox.style.display = "block";
-
-  setTimeout(() => {
-    messageBox.style.display = "none";
-  }, 3000);
-}
-
-/* =======================
-   ADD / UPDATE PRODUCT
-======================= */
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const name = form.name.value.trim();
-  const price = Number(form.price.value);
-  const category = form.category.value;
-  const description = form.description.value.trim();
-  const imageUrl = form.imageUrl.value.trim();
-
-  if (!name || !price || !category) {
-    showMessage("Please fill all required fields.", "error");
-    return;
-  }
-
-  try {
-    if (editId) {
-      await updateDoc(doc(db, "products", editId), {
-        name,
-        price,
-        category,
-        description,
-        imageUrl
-      });
-
-      showMessage("Product updated successfully.");
-      editId = null;
-      form.querySelector("button").innerText = "Add Product";
-    } else {
-      await addDoc(collection(db, "products"), {
-        name,
-        price,
-        category,
-        description,
-        imageUrl,
-        status: "active",
-        createdAt: Date.now()
-      });
-
-      showMessage("Product added successfully.");
-    }
-
-    form.reset();
-    loadAdminProducts();
-
-  } catch (err) {
-    console.error(err);
-    showMessage("Something went wrong. Try again.", "error");
-  }
-});
-
-/* =======================
-   LOAD PRODUCTS
-======================= */
-async function loadAdminProducts() {
-  productsList.innerHTML = "<p>Loading products...</p>";
-
-  try {
-    const snapshot = await getDocs(collection(db, "products"));
-
-    productsCache = snapshot.docs.map(docSnap => ({
-      id: docSnap.id,
-      ...docSnap.data()
-    }));
-
-    renderAdminProducts(productsCache);
-
-  } catch (err) {
-    console.error(err);
-    productsList.innerHTML = "<p>Failed to load products.</p>";
-  }
-}
-
-/* =======================
-   RENDER PRODUCTS
-======================= */
-function renderAdminProducts(products) {
-  productsList.innerHTML = "";
-
-  if (!products.length) {
-    productsList.innerHTML = "<p>No products found.</p>";
-    return;
-  }
-
-  products.forEach(product => {
-    const row = document.createElement("div");
-    row.className = "admin-product";
-
-    row.innerHTML = `
-      <div>
-        <strong>${product.name}</strong> — ₦${Number(product.price).toLocaleString()}
-        <br>
-        <small>${product.category} • ${product.status}</small>
+  <!-- Admin Header -->
+  <header class="main-header">
+    <div class="container">
+      <div class="brand-area">
+        <img src="./images/logo.png" alt="Muna Styles" class="logo">
+        <div class="brand-text">
+          <h1 class="site-title">Muna Styles Admin</h1>
+          <p class="site-tagline">Product Management Dashboard</p>
+        </div>
       </div>
+    </div>
+  </header>
 
-      <div>
-        <button data-edit>Edit</button>
-        <button data-delete>Delete</button>
-        <button data-toggle>
-          ${product.status === "active" ? "Deactivate" : "Activate"}
-        </button>
-      </div>
-    `;
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="container">
+      <ul class="nav-list">
+        <li><a href="index.html" class="nav-link">Back to Shop</a></li>
+        <li><a href="admin.html" class="nav-link active">Dashboard</a></li>
+      </ul>
 
-    /* EDIT */
-    row.querySelector("[data-edit]").onclick = () => {
-      editId = product.id;
-      form.name.value = product.name;
-      form.price.value = product.price;
-      form.category.value = product.category;
-      form.description.value = product.description || "";
-      form.imageUrl.value = product.imageUrl || "";
-      form.querySelector("button").innerText = "Update Product";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+      <button id="logoutBtn" class="logout-btn">Logout</button>
 
-    /* DELETE */
-    row.querySelector("[data-delete]").onclick = async () => {
-      try {
-        await deleteDoc(doc(db, "products", product.id));
-        showMessage("Product deleted.");
-        loadAdminProducts();
-      } catch (err) {
-        console.error(err);
-        showMessage("Delete failed.", "error");
-      }
-    };
+      <button id="resetPasswordBtn" class="logout-btn">Change Password</button>
 
-    /* TOGGLE STATUS */
-    row.querySelector("[data-toggle]").onclick = async () => {
-      try {
-        await updateDoc(doc(db, "products", product.id), {
-          status: product.status === "active" ? "inactive" : "active"
-        });
-        showMessage("Product status updated.");
-        loadAdminProducts();
-      } catch (err) {
-        console.error(err);
-        showMessage("Status update failed.", "error");
-      }
-    };
+    </div>
+  </nav>
 
-    productsList.appendChild(row);
-  });
-}
+  <!-- Main Admin Content -->
+  <main class="admin-content">
+    <div class="container">
+      <h2 class="admin-title">Product Management</h2>
 
-/* =======================
-   SEARCH (ADMIN)
-======================= */
-adminSearch?.addEventListener("input", () => {
-  const term = adminSearch.value.toLowerCase().trim();
+      <!-- Product Form - KEEPING ORIGINAL ID "productForm" -->
+      <form id="productForm" class="admin-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" placeholder="Enter product name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="price">Price (₦)</label>
+            <input type="number" id="price" placeholder="Enter price" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" required>
+              <option value="">Select Category</option>
+              <option value="bags">Bags</option>
+              <option value="kiddies">Kiddies</option>
+              <option value="interior">Interior Décor</option>
+              <option value="shoes">Shoes</option>
+            </select>
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="imageUrl">Image URL</label>
+            <input type="text" id="imageUrl" placeholder="Enter image URL" required>
+          </div>
+          
+          <div class="form-group full-width">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Enter product description" rows="4"></textarea>
+          </div>
+          
+          <div class="form-group full-width">
+            <button type="submit" class="submit-btn">Add Product</button>
+          </div>
+        </div>
+      </form>
 
-  const filtered = productsCache.filter(p =>
-    p.name.toLowerCase().includes(term) ||
-    p.category.toLowerCase().includes(term) ||
-    (p.description && p.description.toLowerCase().includes(term))
-  );
+      <hr class="divider">
 
-  renderAdminProducts(filtered);
-});
+      <input
+  type="search"
+  id="adminSearch"
+  placeholder="Search products..."
+  class="admin-search"
+/>
 
-/* =======================
-   LOGOUT
-======================= */
-logoutBtn?.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    window.location.href = "login.html";
-  } catch (err) {
-    console.error(err);
-    showMessage("Logout failed.", "error");
-  }
-});
 
-/* =======================
-   INITIAL LOAD
-======================= */
-loadAdminProducts();
+      <!-- Products List - KEEPING ORIGINAL ID "adminProducts" -->
+      <h3 class="section-title">Products List</h3>
+      <div id="adminProducts" class="products-list"></div>
+    </div>
+  </main>
+
+  <!-- IMPORTANT: KEEPING YOUR ORIGINAL JAVASCRIPT FILES UNTOUCHED -->
+  <script type="module" src="./js/auth-guard.js"></script>
+  <script type="module" src="./js/admin.js"></script>
+  <script src="./js/theme.js"></script>
+</body>
+</html>
