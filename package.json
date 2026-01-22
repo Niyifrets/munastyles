@@ -1,0 +1,11 @@
+{
+  "name": "muna-styles",
+  "version": "1.0.0",
+  "description": "Muna Styles - Premium Fashion & Interior Décor",
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
