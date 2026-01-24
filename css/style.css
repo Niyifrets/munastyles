@@ -278,10 +278,11 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .hero-slide:nth-child(2) {
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
-    url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80');
+    url("https://images.unsplash.com/photo-1604467794349-0b74285de7e7?auto=format&fit=crop&w=2070&q=80");
 }
+
 
 .hero-slide:nth-child(3) {
   background-image: 
