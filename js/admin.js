@@ -1,13 +1,5 @@
 /* =====================================================
-   ADMIN.JS — Muna Styles (Production Ready)
-   Features:
-   - Admin auth protection
-   - Add / Edit / Delete products
-   - Activate / Deactivate products
-   - Live search
-   - Password reset (email)
-   - Logout
-   - Professional inline messages (no alerts)
+   ADMIN.JS — Muna Styles (Cloudinary + Firestore)
 ===================================================== */
 
 import { db, auth } from "./firebase.js";
@@ -27,12 +19,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 /* =======================
+   CLOUDINARY CONFIG
+======================= */
+const CLOUD_NAME = "dwiayhyx3";
+const UPLOAD_PRESET = "muna_unsigned_upload";
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+/* =======================
    AUTH GUARD
 ======================= */
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
+  if (!user) window.location.href = "login.html";
 });
 
 /* =======================
@@ -45,10 +42,17 @@ const resetPasswordBtn = document.getElementById("resetPasswordBtn");
 const adminSearch = document.getElementById("adminSearch");
 const messageBox = document.getElementById("adminMessage");
 
+const nameInput = document.getElementById("name");
+const priceInput = document.getElementById("price");
+const categoryInput = document.getElementById("category");
+const descriptionInput = document.getElementById("description");
+const imageFileInput = document.getElementById("imageFile");
+
 /* =======================
    STATE
 ======================= */
 let editId = null;
+let existingImageUrl = null;
 let productsCache = [];
 
 /* =======================
@@ -61,7 +65,34 @@ function showMessage(text, type = "success") {
 
   setTimeout(() => {
     messageBox.style.display = "none";
-  }, 3000);
+  }, 3500);
+}
+
+/* =======================
+   CLOUDINARY UPLOAD
+======================= */
+async function uploadImageToCloudinary(file) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error("Unsupported image format");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
+
+  const res = await fetch(CLOUDINARY_URL, {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if (!data.secure_url) {
+    throw new Error("Image upload failed");
+  }
+
+  return data.secure_url;
 }
 
 /* =======================
@@ -70,11 +101,11 @@ function showMessage(text, type = "success") {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = form.name.value.trim();
-  const price = Number(form.price.value);
-  const category = form.category.value;
-  const description = form.description.value.trim();
-  const imageUrl = form.imageUrl.value.trim();
+  const name = nameInput.value.trim();
+  const price = Number(priceInput.value);
+  const category = categoryInput.value;
+  const description = descriptionInput.value.trim();
+  const imageFile = imageFileInput.files[0];
 
   if (!name || !price || !category) {
     showMessage("Please fill all required fields.", "error");
@@ -82,38 +113,48 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    if (editId) {
-      await updateDoc(doc(db, "products", editId), {
-        name,
-        price,
-        category,
-        description,
-        imageUrl
-      });
+    let imageUrl = existingImageUrl;
 
+    if (imageFile) {
+      showMessage("Uploading image...", "success");
+      imageUrl = await uploadImageToCloudinary(imageFile);
+    }
+
+    if (!imageUrl) {
+      showMessage("Please upload a product image.", "error");
+      return;
+    }
+
+    const productData = {
+      name,
+      price,
+      category,
+      description,
+      imageUrl,
+      status: "active",
+      updatedAt: Date.now()
+    };
+
+    if (editId) {
+      await updateDoc(doc(db, "products", editId), productData);
       showMessage("Product updated successfully.");
-      editId = null;
-      form.querySelector("button").innerText = "Add Product";
     } else {
       await addDoc(collection(db, "products"), {
-        name,
-        price,
-        category,
-        description,
-        imageUrl,
-        status: "active",
+        ...productData,
         createdAt: Date.now()
       });
-
       showMessage("Product added successfully.");
     }
 
     form.reset();
+    editId = null;
+    existingImageUrl = null;
+    form.querySelector("button").innerText = "Add Product";
     loadAdminProducts();
 
   } catch (err) {
     console.error(err);
-    showMessage("Something went wrong. Try again.", "error");
+    showMessage(err.message || "Operation failed.", "error");
   }
 });
 
@@ -125,14 +166,8 @@ async function loadAdminProducts() {
 
   try {
     const snapshot = await getDocs(collection(db, "products"));
-
-    productsCache = snapshot.docs.map(docSnap => ({
-      id: docSnap.id,
-      ...docSnap.data()
-    }));
-
+    productsCache = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAdminProducts(productsCache);
-
   } catch (err) {
     console.error(err);
     productsList.innerHTML = "<p>Failed to load products.</p>";
@@ -170,42 +205,29 @@ function renderAdminProducts(products) {
       </div>
     `;
 
-    /* EDIT */
     row.querySelector("[data-edit]").onclick = () => {
       editId = product.id;
-      form.name.value = product.name;
-      form.price.value = product.price;
-      form.category.value = product.category;
-      form.description.value = product.description || "";
-      form.imageUrl.value = product.imageUrl || "";
+      existingImageUrl = product.imageUrl;
+      nameInput.value = product.name;
+      priceInput.value = product.price;
+      categoryInput.value = product.category;
+      descriptionInput.value = product.description || "";
       form.querySelector("button").innerText = "Update Product";
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    /* DELETE */
     row.querySelector("[data-delete]").onclick = async () => {
-      try {
-        await deleteDoc(doc(db, "products", product.id));
-        showMessage("Product deleted.");
-        loadAdminProducts();
-      } catch (err) {
-        console.error(err);
-        showMessage("Delete failed.", "error");
-      }
+      await deleteDoc(doc(db, "products", product.id));
+      showMessage("Product deleted.");
+      loadAdminProducts();
     };
 
-    /* TOGGLE STATUS */
     row.querySelector("[data-toggle]").onclick = async () => {
-      try {
-        await updateDoc(doc(db, "products", product.id), {
-          status: product.status === "active" ? "inactive" : "active"
-        });
-        showMessage("Product status updated.");
-        loadAdminProducts();
-      } catch (err) {
-        console.error(err);
-        showMessage("Status update failed.", "error");
-      }
+      await updateDoc(doc(db, "products", product.id), {
+        status: product.status === "active" ? "inactive" : "active"
+      });
+      showMessage("Status updated.");
+      loadAdminProducts();
     };
 
     productsList.appendChild(row);
@@ -213,54 +235,35 @@ function renderAdminProducts(products) {
 }
 
 /* =======================
-   SEARCH PRODUCTS
+   SEARCH
 ======================= */
 adminSearch?.addEventListener("input", () => {
-  const term = adminSearch.value.toLowerCase().trim();
-
-  const filtered = productsCache.filter(p =>
-    p.name.toLowerCase().includes(term) ||
-    p.category.toLowerCase().includes(term) ||
-    (p.description && p.description.toLowerCase().includes(term))
+  const term = adminSearch.value.toLowerCase();
+  renderAdminProducts(
+    productsCache.filter(p =>
+      p.name.toLowerCase().includes(term) ||
+      p.category.toLowerCase().includes(term)
+    )
   );
-
-  renderAdminProducts(filtered);
 });
 
 /* =======================
-   PASSWORD RESET (OPTION 1)
+   PASSWORD RESET
 ======================= */
 resetPasswordBtn?.addEventListener("click", async () => {
-  const user = auth.currentUser;
-
-  if (!user || !user.email) {
-    showMessage("Unable to detect admin email.", "error");
-    return;
-  }
-
-  try {
-    await sendPasswordResetEmail(auth, user.email);
-    showMessage("Password reset email sent. Check your inbox.");
-  } catch (err) {
-    console.error(err);
-    showMessage("Failed to send reset email.", "error");
-  }
+  await sendPasswordResetEmail(auth, auth.currentUser.email);
+  showMessage("Password reset email sent.");
 });
 
 /* =======================
    LOGOUT
 ======================= */
 logoutBtn?.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    window.location.href = "login.html";
-  } catch (err) {
-    console.error(err);
-    showMessage("Logout failed.", "error");
-  }
+  await signOut(auth);
+  window.location.href = "login.html";
 });
 
 /* =======================
-   INITIAL LOAD
+   INIT
 ======================= */
 loadAdminProducts();
