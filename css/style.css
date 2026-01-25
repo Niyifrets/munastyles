@@ -1,0 +1,1565 @@
+/* ==========================================================================
+   CSS Variables & Theme Setup
+   ========================================================================== */
+
+/* Playfair Display Typography */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Light Theme Variables - KEEPING ORIGINAL COLORS */
+  --color-bg-primary: #fefefe;
+  --color-bg-secondary: #f8f9fa;
+  --color-bg-card: #ffffff;
+  --color-text-primary: #2c3e50;
+  --color-text-secondary: #6c757d;
+  --color-border: #e9ecef;
+  --color-accent: #c7a17a; /* KEEPING ORIGINAL ACCENT */
+  --color-accent-light: #e6d3b3; /* KEEPING ORIGINAL */
+  
+  /* ADDING PINK AS ADDITIONAL COLOR */
+  --color-pink: #e75480;
+  --color-pink-light: #f8c8dc;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  
+  /* Typography */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Variables - KEEPING ORIGINAL COLORS */
+  --color-bg-primary: #1a1d24;
+  --color-bg-secondary: #23272f;
+  --color-bg-card: #2d3139;
+  --color-text-primary: #f8f9fa;
+  --color-text-secondary: #adb5bd;
+  --color-border: #3a3f4b;
+  --color-accent: #d4b089; /* KEEPING ORIGINAL */
+  --color-accent-light: #4a3c2a; /* KEEPING ORIGINAL */
+  
+  /* ADDING PINK FOR DARK MODE */
+  --color-pink: #ff7ba3;
+  --color-pink-light: #4a2a35;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Reset & Base Styles
+   ========================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Headings with Playfair Display */
+h1, h2, h3, h4, h5, h6,
+.site-title,
+.hero-title,
+.admin-title,
+.section-title,
+.footer-title,
+.faq-question,
+.cta-section h2,
+.shop-header h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.site-title {
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.hero-title {
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ==========================================================================
+   Theme Toggle
+   ========================================================================== */
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.sun-icon {
+  display: block;
+}
+
+.moon-icon {
+  display: none;
+}
+
+[data-theme="dark"] .sun-icon {
+  display: none;
+}
+
+[data-theme="dark"] .moon-icon {
+  display: block;
+}
+
+/* ==========================================================================
+   Floating WhatsApp Button - ADDING PINK TOUCH
+   ========================================================================== */
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #25D366;
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  background: var(--color-pink); /* ADDED PINK ON HOVER */
+}
+
+/* ==========================================================================
+   Header & Navigation - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.main-header {
+  background: var(--color-bg-card);
+  padding: 20px 0;
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+  z-index: 100;
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  height: 60px;
+  width: auto;
+  border-radius: var(--radius-sm);
+}
+
+.site-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.site-tagline {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.main-nav {
+  background: var(--color-bg-secondary);
+  padding: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 0;
+  gap: 2px;
+}
+
+.nav-link {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--color-pink-light); /* USING PINK LIGHT */
+  color: var(--color-text-primary);
+}
+
+/* ==========================================================================
+   Hero Section with Slideshow - FIXED FOR DARK MODE
+   ========================================================================== */
+
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-slide:nth-child(1) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
+    url('https://images.unsplash.com/photo-1584917865442-de89df76afd3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+}
+
+.hero-slide:nth-child(2) {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
+    url("https://images.unsplash.com/photo-1604467794349-0b74285de7e7?auto=format&fit=crop&w=2070&q=80");
+}
+
+
+.hero-slide:nth-child(3) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
+    url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=2032&q=80');
+}
+
+.hero-slide:nth-child(4) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
+    url('https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+}
+
+/* FIX FOR DARK MODE - Different opacity for better visibility */
+[data-theme="dark"] .hero-slide:nth-child(1) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
+    url('https://images.unsplash.com/photo-1584917865442-de89df76afd3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+}
+
+[data-theme="dark"] .hero-slide:nth-child(2) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
+    url("https://images.unsplash.com/photo-1604467794349-0b74285de7e7?auto=format&fit=crop&w=2070&q=80");
+}
+
+[data-theme="dark"] .hero-slide:nth-child(3) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
+    url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=2032&q=80');
+}
+
+[data-theme="dark"] .hero-slide:nth-child(4) {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
+    url('https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+  width: 90%;
+  max-width: 800px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.slide-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background: var(--color-pink); /* USING PINK FOR ACTIVE INDICATOR */
+  transform: scale(1.2);
+}
+
+[data-theme="dark"] .indicator {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.slide-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 3;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-nav:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--color-pink); /* PINK ON HOVER */
+}
+
+[data-theme="dark"] .slide-nav {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+[data-theme="dark"] .slide-nav:hover {
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-pink);
+}
+
+.slide-nav.prev {
+  left: 20px;
+}
+
+.slide-nav.next {
+  right: 20px;
+}
+
+/* ==========================================================================
+   Main Content
+   ========================================================================== */
+
+.main-content {
+  padding: 40px 0;
+}
+
+.search-container {
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto 30px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 20px 16px 48px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(199, 161, 122, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   Filters - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.filters button {
+  padding: 10px 20px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.filters button:hover {
+  background: var(--color-pink-light); /* PINK LIGHT ON HOVER */
+  color: var(--color-text-primary);
+  border-color: var(--color-pink-light);
+}
+
+.filters button.active {
+  background: var(--color-accent); /* KEEPING ORIGINAL ACCENT */
+  color: white;
+  border-color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Trust Indicators - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.trust-indicators {
+  padding: 40px 0;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  margin-bottom: 40px;
+  border: 1px solid var(--color-border);
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.trust-item i {
+  font-size: 32px;
+  color: var(--color-pink); /* USING PINK FOR ICONS */
+  width: 48px;
+  text-align: center;
+}
+
+.trust-item h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: var(--color-text-primary);
+}
+
+.trust-item p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   Product Grid - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 40px 0;
+}
+
+.product-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--color-border);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-pink); /* PINK BORDER ON HOVER */
+}
+
+.product-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.product-card h3 {
+  padding: 16px 16px 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.product-card .price {
+  padding: 0 16px 16px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-accent); /* KEEPING ORIGINAL ACCENT */
+}
+
+/* Add to Cart Button on Product Cards - ADDING PINK TOUCHES */
+.add-to-cart-btn {
+  margin: 0 16px 16px;
+  padding: 12px;
+  background: var(--color-accent); /* KEEPING ORIGINAL */
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.add-to-cart-btn:hover {
+  background: var(--color-pink); /* PINK ON HOVER */
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Call to Action - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.cta-section {
+  text-align: center;
+  padding: 60px 0;
+  background: linear-gradient(135deg, var(--color-pink-light) 0%, var(--color-bg-secondary) 100%); /* USING PINK LIGHT */
+  border-radius: var(--radius-md);
+  margin: 40px 0;
+}
+
+.cta-section h2 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: var(--color-text-primary);
+}
+
+.cta-section p {
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 32px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: #25D366;
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background: var(--color-pink); /* PINK ON HOVER */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   Footer - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.main-footer {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  padding: 60px 0 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-logo {
+  height: 50px;
+  width: auto;
+  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.footer-description {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.footer-title {
+  font-size: 1.125rem;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-links a:hover {
+  color: var(--color-pink); /* PINK ON HOVER */
+}
+
+.social-links {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  color: var(--color-text-secondary);
+  transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  text-decoration: none;
+}
+
+.social-link:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.social-link.whatsapp:hover {
+  background: var(--color-pink); /* PINK INSTEAD OF GREEN */
+  border-color: var(--color-pink);
+}
+
+.social-link.phone:hover {
+  background: #3498db;
+  border-color: #3498db;
+}
+
+.social-link.email:hover {
+  background: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.social-link.facebook:hover {
+  background: #1877F2;
+  border-color: #1877F2;
+}
+
+.social-link.instagram:hover {
+  background: #E4405F;
+  border-color: #E4405F;
+}
+
+.social-link.twitter:hover {
+  background: #1DA1F2;
+  border-color: #1DA1F2;
+}
+
+.contact-note {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  opacity: 0.8;
+  margin-top: 10px;
+}
+
+.business-hours {
+  list-style: none;
+}
+
+.business-hours li {
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.business-hours span {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.875rem;
+}
+
+.footer-legal {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   Admin Page Styles - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.admin-content {
+  padding: 40px 0;
+}
+
+.admin-title {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: var(--color-text-primary);
+}
+
+.admin-form {
+  background: var(--color-bg-card);
+  padding: 30px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  margin-bottom: 40px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(199, 161, 122, 0.1);
+}
+
+.submit-btn {
+  padding: 14px 28px;
+  background: var(--color-accent); /* KEEPING ORIGINAL */
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 200px;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 40px 0;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--color-text-primary);
+}
+
+.products-list {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-product {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-product strong {
+  color: var(--color-text-primary);
+  font-size: 1.125rem;
+}
+
+.admin-product small {
+  color: var(--color-text-secondary);
+}
+
+.admin-product button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.admin-product button[data-edit] {
+  background: #3498db;
+  color: white;
+}
+
+.admin-product button[data-delete] {
+  background: #e74c3c;
+  color: white;
+}
+
+.admin-product button[data-toggle] {
+  background: var(--color-accent); /* KEEPING ORIGINAL */
+  color: white;
+}
+
+.admin-product button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Cart Icon - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.cart-icon {
+  position: fixed;
+  top: 20px;
+  right: 80px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: 10px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.cart-icon:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-pink); /* PINK BORDER ON HOVER */
+  box-shadow: var(--shadow-md);
+}
+
+.cart-icon i {
+  font-size: 18px;
+  color: var(--color-pink); /* PINK ICON */
+}
+
+#cartCount {
+  background: var(--color-accent); /* KEEPING ORIGINAL */
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   Cart Modal - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.cart-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.cart-modal.active {
+  display: flex;
+}
+
+.cart-content {
+  background: var(--color-bg-card);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
+}
+
+.close-cart {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 5px;
+  line-height: 1;
+}
+
+.cart-items {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-secondary);
+}
+
+.empty-cart i {
+  font-size: 48px;
+  margin-bottom: 20px;
+  color: var(--color-border);
+}
+
+.empty-cart h4 {
+  margin-bottom: 10px;
+  color: var(--color-text-primary);
+}
+
+.empty-cart .btn-primary {
+  margin-top: 20px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-right: 15px;
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.cart-item-price {
+  color: var(--color-accent); /* KEEPING ORIGINAL */
+  font-weight: 600;
+}
+
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-item-controls button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-item-qty {
+  min-width: 30px;
+  text-align: center;
+}
+
+.remove-item {
+  color: #e74c3c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.cart-footer {
+  padding: 20px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.cart-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cart-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cart-actions .checkout-btn {
+  background: var(--color-accent); /* KEEPING ORIGINAL */
+  color: white;
+}
+
+.cart-actions .checkout-btn:hover {
+  background: var(--color-pink); /* PINK ON HOVER */
+}
+
+.cart-actions .close-btn {
+  background: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.cart-actions .close-btn:hover {
+  background: var(--color-text-secondary);
+  color: white;
+}
+
+/* ==========================================================================
+   See More Button - ADDING PINK TOUCHES
+   ========================================================================== */
+
+.see-more-container {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.see-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: var(--color-accent); /* KEEPING ORIGINAL */
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.see-more-btn:hover {
+  background: var(--color-pink); /* PINK ON HOVER */
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Featured Products
+   ========================================================================== */
+
+.featured-products {
+  margin: 40px 0;
+}
+
+.featured-products .product-grid {
+  padding: 0;
+}
+
+/* ==========================================================================
+   Login Page Styles
+   ========================================================================== */
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--color-bg-secondary);
+  padding: 20px;
+}
+
+.auth-page .auth-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.auth-page .auth-card .logo {
+  height: 80px;
+  width: auto;
+  margin-bottom: 24px;
+  border-radius: var(--radius-sm);
+}
+
+.auth-page .auth-card h2 {
+  font-size: 1.75rem;
+  margin-bottom: 24px;
+  color: var(--color-text-primary);
+}
+
+.auth-page .auth-card form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-page .auth-card .form-group {
+  margin-bottom: 0;
+}
+
+.auth-page .auth-card input {
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  width: 100%;
+}
+
+.auth-page .auth-card input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(199, 161, 122, 0.1);
+}
+
+.auth-page .auth-card button {
+  padding: 14px 28px;
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.auth-page .auth-card button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+#errorMsg {
+  color: #e74c3c;
+  margin-top: 16px;
+  font-size: 0.875rem;
+  min-height: 20px;
+}
+
+/* ==========================================================================
+   Admin Search
+   ========================================================================== */
+
+.admin-search {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+}
+
+.admin-message {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: none;
+}
+
+.admin-message.success {
+  background: #eafaf1;
+  color: #1e8449;
+  border: 1px solid #a9dfbf;
+}
+
+.admin-message.error {
+  background: #fdecea;
+  color: #922b21;
+  border: 1px solid #f5b7b1;
+}
+
+/* ==========================================================================
+   Logout Button
+   ========================================================================== */
+
+.logout-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+  right: 50px;
+  top: 20px;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Mobile Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .theme-toggle {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .whatsapp-float {
+    bottom: 16px;
+    right: 16px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .cart-icon {
+    top: 10px;
+    right: 70px;
+    padding: 8px 14px;
+    font-size: 0.875rem;
+  }
+
+  .slideshow-container {
+    height: 400px;
+  }
+  
+  .slide-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .slide-nav.prev {
+    left: 10px;
+  }
+  
+  .slide-nav.next {
+    right: 10px;
+  }
+
+  .brand-area {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .site-title {
+    font-size: 1.5rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .nav-list {
+    padding: 8px 0;
+  }
+
+  .nav-link {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+
+  .filters {
+    gap: 6px;
+  }
+
+  .filters button {
+    padding: 8px 16px;
+    font-size: 0.8125rem;
+  }
+
+  .trust-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .cta-section {
+    padding: 40px 20px;
+  }
+
+  .cta-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .cta-button {
+    padding: 14px 28px;
+    font-size: 1rem;
+  }
+
+  .see-more-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .admin-form {
+    padding: 20px;
+  }
+
+  .admin-product {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+
+  .cart-icon {
+    right: 60px;
+    padding: 6px 12px;
+  }
+
+  #cartCount {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+  }
+
+  .slideshow-container {
+    height: 300px;
+  }
+  
+  .slide-indicators {
+    bottom: 20px;
+  }
+  
+  .indicator {
+    width: 10px;
+    height: 10px;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .product-card.with-cart .add-to-cart-btn {
+    padding: 10px;
+    font-size: 0.8125rem;
+  }
+}
+
