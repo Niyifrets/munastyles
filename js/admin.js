@@ -1,6 +1,7 @@
 /* =====================================================
    ADMIN.JS — Muna Styles (Cloudinary + Firestore)
    WITH MULTIPLE IMAGE UPLOAD SUPPORT
+   ADDED FEEDBACK NOTIFICATIONS
 ===================================================== */
 
 import { db, auth } from "./firebase.js";
@@ -41,7 +42,6 @@ const productsList = document.getElementById("adminProducts");
 const logoutBtn = document.getElementById("logoutBtn");
 const resetPasswordBtn = document.getElementById("resetPasswordBtn");
 const adminSearch = document.getElementById("adminSearch");
-const messageBox = document.getElementById("adminMessage");
 
 const nameInput = document.getElementById("name");
 const priceInput = document.getElementById("price");
@@ -56,16 +56,145 @@ let existingImageUrls = [];
 let productsCache = [];
 
 /* =======================
+   NOTIFICATION SYSTEM
+======================= */
+function createNotificationSystem() {
+  const notificationContainer = document.createElement('div');
+  notificationContainer.id = 'notificationContainer';
+  notificationContainer.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+  `;
+  document.body.appendChild(notificationContainer);
+  
+  function showNotification(message, type = 'info', duration = 5000) {
+    const notification = document.createElement('div');
+    notification.className = `admin-notification ${type}`;
+    notification.style.cssText = `
+      background: ${type === 'success' ? '#4CAF50' : 
+                   type === 'error' ? '#F44336' : 
+                   type === 'warning' ? '#FF9800' : 
+                   '#2196F3'};
+      color: white;
+      padding: 15px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease-out;
+      max-width: 400px;
+    `;
+    
+    const icon = document.createElement('i');
+    icon.className = `fas ${
+      type === 'success' ? 'fa-check-circle' :
+      type === 'error' ? 'fa-exclamation-circle' :
+      type === 'warning' ? 'fa-exclamation-triangle' :
+      'fa-info-circle'
+    }`;
+    
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    messageSpan.style.flex = '1';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    closeBtn.style.cssText = `
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 4px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    `;
+    closeBtn.addEventListener('mouseenter', () => closeBtn.style.opacity = '1');
+    closeBtn.addEventListener('mouseleave', () => closeBtn.style.opacity = '0.8');
+    closeBtn.addEventListener('click', () => removeNotification(notification));
+    
+    notification.appendChild(icon);
+    notification.appendChild(messageSpan);
+    notification.appendChild(closeBtn);
+    
+    notificationContainer.appendChild(notification);
+    
+    if (duration > 0) {
+      setTimeout(() => removeNotification(notification), duration);
+    }
+    
+    return notification;
+  }
+  
+  function removeNotification(notification) {
+    notification.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }
+  
+  // Add CSS for animations
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    
+    .admin-notification {
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .admin-notification.fade-out {
+      animation: slideOut 0.3s ease-in;
+    }
+  `;
+  document.head.appendChild(style);
+  
+  return { showNotification };
+}
+
+const { showNotification } = createNotificationSystem();
+
+/* =======================
    MESSAGE HANDLER
 ======================= */
 function showMessage(text, type = "success") {
-  messageBox.textContent = text;
-  messageBox.className = `admin-message ${type}`;
-  messageBox.style.display = "block";
+  const messageBox = document.getElementById("adminMessage");
+  if (messageBox) {
+    messageBox.textContent = text;
+    messageBox.className = `admin-message ${type}`;
+    messageBox.style.display = "block";
 
-  setTimeout(() => {
-    messageBox.style.display = "none";
-  }, 3500);
+    setTimeout(() => {
+      messageBox.style.display = "none";
+    }, 3500);
+  }
 }
 
 /* =======================
@@ -118,16 +247,36 @@ async function uploadMultipleImages(files) {
     return [];
   }
   
-  showMessage(`Uploading ${imagesToUpload.length} image(s)...`, "success");
+  // Show upload progress notification
+  const uploadNotification = showNotification(`Uploading ${imagesToUpload.length} image(s)...`, 'info', 0);
   
   for (let i = 0; i < imagesToUpload.length; i++) {
     try {
       const imageUrl = await uploadImageToCloudinary(imagesToUpload[i]);
       uploadedUrls.push(imageUrl);
+      
+      // Update notification with progress
+      if (uploadNotification) {
+        const messageSpan = uploadNotification.querySelector('span');
+        if (messageSpan) {
+          messageSpan.textContent = `Uploading images... (${i + 1}/${imagesToUpload.length})`;
+        }
+      }
     } catch (error) {
       console.error(`Error uploading image ${i + 1}:`, error);
+      
+      // Remove upload notification
+      if (uploadNotification && uploadNotification.parentNode) {
+        uploadNotification.parentNode.removeChild(uploadNotification);
+      }
+      
       throw error;
     }
+  }
+  
+  // Remove upload notification after completion
+  if (uploadNotification && uploadNotification.parentNode) {
+    uploadNotification.parentNode.removeChild(uploadNotification);
   }
   
   return uploadedUrls;
@@ -176,7 +325,7 @@ function handleImageSelection(event) {
   const selectedFiles = Array.from(files).slice(0, maxFiles);
   
   if (files.length > maxFiles) {
-    showMessage(`Maximum ${maxFiles} images allowed. Only first ${maxFiles} will be uploaded.`, "warning");
+    showNotification(`Maximum ${maxFiles} images allowed. Only first ${maxFiles} will be uploaded.`, "warning");
   }
   
   // Create preview for each image
@@ -238,11 +387,14 @@ form.addEventListener("submit", async (e) => {
   const imageFiles = imageFileInput ? imageFileInput.files : null;
 
   if (!name || !price || !category) {
-    showMessage("Please fill all required fields.", "error");
+    showNotification("Please fill all required fields.", "error");
     return;
   }
 
   try {
+    // Show uploading notification
+    const uploadingNotification = showNotification("Uploading product...", "info", 0);
+    
     let imageUrls = [...existingImageUrls];
 
     // Upload new images if any
@@ -252,7 +404,11 @@ form.addEventListener("submit", async (e) => {
     }
 
     if (imageUrls.length === 0) {
-      showMessage("Please upload at least one product image.", "error");
+      // Remove uploading notification
+      if (uploadingNotification && uploadingNotification.parentNode) {
+        uploadingNotification.parentNode.removeChild(uploadingNotification);
+      }
+      showNotification("Please upload at least one product image.", "error");
       return;
     }
 
@@ -271,14 +427,26 @@ form.addEventListener("submit", async (e) => {
     if (editId) {
       // Update existing product
       await updateDoc(doc(db, "products", editId), productData);
-      showMessage("Product updated successfully.");
+      
+      // Remove uploading notification
+      if (uploadingNotification && uploadingNotification.parentNode) {
+        uploadingNotification.parentNode.removeChild(uploadingNotification);
+      }
+      
+      showNotification("Product updated successfully!", "success");
     } else {
       // Add new product
       await addDoc(collection(db, "products"), {
         ...productData,
         createdAt: Date.now()
       });
-      showMessage("Product added successfully.");
+      
+      // Remove uploading notification
+      if (uploadingNotification && uploadingNotification.parentNode) {
+        uploadingNotification.parentNode.removeChild(uploadingNotification);
+      }
+      
+      showNotification("Product added successfully!", "success");
     }
 
     // Reset form
@@ -299,7 +467,16 @@ form.addEventListener("submit", async (e) => {
 
   } catch (err) {
     console.error("Form submission error:", err);
-    showMessage(err.message || "Operation failed. Please try again.", "error");
+    
+    // Remove any uploading notification
+    const notifications = document.querySelectorAll('.admin-notification');
+    notifications.forEach(notification => {
+      if (notification.textContent.includes('Uploading')) {
+        notification.parentNode?.removeChild(notification);
+      }
+    });
+    
+    showNotification(err.message || "Operation failed. Please try again.", "error");
   }
 });
 
@@ -321,6 +498,7 @@ async function loadAdminProducts() {
   } catch (err) {
     console.error(err);
     productsList.innerHTML = "<p>Failed to load products.</p>";
+    showNotification("Failed to load products. Please refresh the page.", "error");
   }
 }
 
@@ -392,24 +570,51 @@ function renderAdminProducts(products) {
       }
       
       window.scrollTo({ top: 0, behavior: "smooth" });
+      
+      showNotification(`Editing product: ${product.name}`, "info");
     };
 
     // Delete functionality
     row.querySelector("[data-delete]").onclick = async () => {
       if (confirm("Are you sure you want to delete this product?")) {
-        await deleteDoc(doc(db, "products", product.id));
-        showMessage("Product deleted.");
-        loadAdminProducts();
+        try {
+          const deletingNotification = showNotification("Deleting product...", "info", 0);
+          await deleteDoc(doc(db, "products", product.id));
+          
+          // Remove deleting notification
+          if (deletingNotification && deletingNotification.parentNode) {
+            deletingNotification.parentNode.removeChild(deletingNotification);
+          }
+          
+          showNotification("Product deleted successfully!", "success");
+          loadAdminProducts();
+        } catch (error) {
+          showNotification("Failed to delete product. Please try again.", "error");
+          console.error("Delete error:", error);
+        }
       }
     };
 
     // Toggle status functionality
     row.querySelector("[data-toggle]").onclick = async () => {
-      await updateDoc(doc(db, "products", product.id), {
-        status: product.status === "active" ? "inactive" : "active"
-      });
-      showMessage("Status updated.");
-      loadAdminProducts();
+      const newStatus = product.status === "active" ? "inactive" : "active";
+      try {
+        const updatingNotification = showNotification("Updating product status...", "info", 0);
+        await updateDoc(doc(db, "products", product.id), {
+          status: newStatus
+        });
+        
+        // Remove updating notification
+        if (updatingNotification && updatingNotification.parentNode) {
+          updatingNotification.parentNode.removeChild(updatingNotification);
+        }
+        
+        showNotification(`Product ${newStatus === "active" ? "activated" : "deactivated"}!`, "success");
+        loadAdminProducts();
+      } catch (error) {
+        showNotification("Failed to update status. Please try again.", "error");
+        console.error("Status update error:", error);
+      }
     };
 
     productsList.appendChild(row);
@@ -435,11 +640,21 @@ adminSearch?.addEventListener("input", () => {
 ======================= */
 resetPasswordBtn?.addEventListener("click", async () => {
   try {
+    showNotification("Sending password reset email...", "info", 0);
     await sendPasswordResetEmail(auth, auth.currentUser.email);
-    showMessage("Password reset email sent. Check your inbox.");
+    
+    // Find and remove the sending notification
+    const notifications = document.querySelectorAll('.admin-notification');
+    notifications.forEach(notification => {
+      if (notification.textContent.includes('Sending password reset')) {
+        notification.parentNode?.removeChild(notification);
+      }
+    });
+    
+    showNotification("Password reset email sent. Check your inbox.", "success");
   } catch (error) {
     console.error("Password reset error:", error);
-    showMessage("Failed to send reset email. Please try again.", "error");
+    showNotification("Failed to send reset email. Please try again.", "error");
   }
 });
 
@@ -448,10 +663,12 @@ resetPasswordBtn?.addEventListener("click", async () => {
 ======================= */
 logoutBtn?.addEventListener("click", async () => {
   try {
+    showNotification("Logging out...", "info", 0);
     await signOut(auth);
     window.location.href = "login.html";
   } catch (error) {
     console.error("Logout error:", error);
+    showNotification("Failed to logout. Please try again.", "error");
   }
 });
 
@@ -467,6 +684,9 @@ function initializeAdmin() {
   
   // Add styles for image preview
   addPreviewStyles();
+  
+  // Add notification container styles
+  addNotificationStyles();
 }
 
 function addPreviewStyles() {
@@ -538,6 +758,69 @@ function addPreviewStyles() {
       margin-top: 5px;
       color: var(--color-text-secondary);
       font-size: 0.875rem;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function addNotificationStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Notification system styles */
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    
+    .admin-notification {
+      animation: slideIn 0.3s ease-out;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 400px;
+      margin-bottom: 10px;
+    }
+    
+    .admin-notification.error {
+      background: #F44336;
+    }
+    
+    .admin-notification.warning {
+      background: #FF9800;
+    }
+    
+    .admin-notification.info {
+      background: #2196F3;
+    }
+    
+    .admin-notification.success {
+      background: #4CAF50;
+    }
+    
+    .admin-notification.fade-out {
+      animation: slideOut 0.3s ease-in;
     }
   `;
   document.head.appendChild(style);
