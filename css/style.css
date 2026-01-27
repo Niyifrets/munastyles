@@ -536,7 +536,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ==========================================================================
-   FIXED PRODUCT CARD SIZING - NEW STYLES ADDED
+   Product Grid - ADDING PINK TOUCHES
    ========================================================================== */
 
 .product-grid {
@@ -556,12 +556,7 @@ h1, h2, h3, h4, h5, h6,
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  height: 420px; /* Fixed height */
-  min-height: 0; /* Important for flexbox children */
-}
-
-.product-card.with-cart {
-  height: 480px; /* Slightly taller for cards with cart buttons */
+  height: 100%;
 }
 
 .product-card:hover {
@@ -572,112 +567,23 @@ h1, h2, h3, h4, h5, h6,
 
 .product-card img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.product-image-container {
-  position: relative;
-  width: 100%;
   height: 220px;
-  min-height: 220px;
-  max-height: 220px;
-  overflow: hidden;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  background: var(--color-bg-secondary);
-  flex-shrink: 0;
-}
-
-.product-image {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.product-card:hover .product-image {
-  transform: scale(1.05);
-}
-
-.product-image-placeholder {
-  width: 100%;
-  height: 100%;
-  min-height: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-border);
-}
-
-.product-image-placeholder i {
-  font-size: 48px;
-  margin-bottom: 10px;
-}
-
-.product-image-placeholder span {
-  font-size: 0.875rem;
-}
-
-.product-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 10px;
-  background: var(--color-accent);
-  color: white;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  z-index: 1;
-}
-
-.product-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  min-height: 0; /* Important for proper flex behavior */
-  overflow: hidden;
-}
-
-.product-title {
+.product-card h3 {
+  padding: 16px 16px 8px;
   font-size: 1.125rem;
-  line-height: 1.4;
-  margin-bottom: 8px;
-  color: var(--color-text-primary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit to 2 lines */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: 2.8em; /* Fixed height for title */
-  min-height: 2.8em;
   font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-.product-price {
+.product-card .price {
+  padding: 0 16px 16px;
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-accent);
-  margin-bottom: 12px;
-  flex-shrink: 0;
-}
-
-.product-description {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  line-height: 1.5;
-  margin-top: auto; /* Push to bottom */
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /* Limit to 3 lines */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-height: 4.5em; /* Fixed height for description */
-  min-height: 0;
-  flex: 1;
+  color: var(--color-accent); /* KEEPING ORIGINAL ACCENT */
 }
 
 /* Add to Cart Button on Product Cards - ADDING PINK TOUCHES */
@@ -696,42 +602,11 @@ h1, h2, h3, h4, h5, h6,
   justify-content: center;
   gap: 8px;
   font-size: 0.875rem;
-  flex-shrink: 0;
-  margin-top: auto; /* Push to bottom */
-  width: calc(100% - 32px);
 }
 
 .add-to-cart-btn:hover {
   background: var(--color-pink); /* PINK ON HOVER */
   transform: translateY(-2px);
-}
-
-.add-to-cart-btn.added {
-  background: #25D366 !important;
-}
-
-.add-to-cart-btn.added i {
-  animation: bounce 0.5s ease;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
-/* Ensure consistent product card behavior in both index.html and shop.html */
-#products .product-card {
-  height: 480px;
-}
-
-#products .product-title {
-  -webkit-line-clamp: 2;
-  height: 2.8em;
-}
-
-#products .product-description {
-  -webkit-line-clamp: 3;
-  max-height: 4.5em;
 }
 
 /* ==========================================================================
@@ -1514,7 +1389,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* ==========================================================================
-   Mobile Responsive - UPDATED FOR FIXED CARD SIZING
+   Mobile Responsive
    ========================================================================== */
 
 @media (max-width: 768px) {
@@ -1602,49 +1477,9 @@ h1, h2, h3, h4, h5, h6,
     gap: 20px;
   }
 
-  /* Updated mobile product grid */
   .product-grid {
-    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on mobile */
-    gap: 16px;
-  }
-  
-  .product-card {
-    height: 400px; /* Slightly shorter on mobile */
-  }
-  
-  .product-card.with-cart {
-    height: 460px;
-  }
-  
-  .product-image-container {
-    height: 180px;
-    min-height: 180px;
-    max-height: 180px;
-  }
-  
-  .product-image-placeholder {
-    min-height: 180px;
-  }
-  
-  .product-title {
-    font-size: 1rem;
-    -webkit-line-clamp: 2;
-    height: 2.6em;
-    min-height: 2.6em;
-  }
-  
-  .product-price {
-    font-size: 1.125rem;
-  }
-  
-  .product-description {
-    -webkit-line-clamp: 2; /* Show only 2 lines on mobile */
-    max-height: 3em;
-  }
-  
-  .add-to-cart-btn {
-    padding: 10px;
-    font-size: 0.8125rem;
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .cta-section {
@@ -1722,37 +1557,8 @@ h1, h2, h3, h4, h5, h6,
     justify-content: center;
   }
 
-  /* Updated very small screens */
-  .product-grid {
-    gap: 12px;
-  }
-  
-  .product-card {
-    height: 380px;
-  }
-  
-  .product-card.with-cart {
-    height: 440px;
-  }
-  
-  .product-image-container {
-    height: 160px;
-    min-height: 160px;
-    max-height: 160px;
-  }
-  
-  .product-image-placeholder {
-    min-height: 160px;
-  }
-  
-  .add-to-cart-btn {
+  .product-card.with-cart .add-to-cart-btn {
     padding: 10px;
     font-size: 0.8125rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .product-grid {
-    grid-template-columns: 1fr !important; /* Single column on very small screens */
   }
 }
