@@ -1,56 +1,73 @@
+# robots.txt for Muna Styles Nigeria
+# https://munastyles.com.ng
+
 User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /login.html
+Disallow: /cart.html
+Disallow: /checkout.html
+Disallow: /js/
+Disallow: /css/
+Disallow: /images/logo.png$
 Disallow: /*.js$
 Disallow: /*.css$
 Disallow: /*.json$
+Disallow: /api/
 
 # Sitemaps
 Sitemap: https://munastyles.com.ng/sitemap.xml
 
-# Crawl delay (adjust based on server capacity)
+# Crawl delay (be gentle to the server)
 Crawl-delay: 10
 
-# Specific bots
+# Google specific rules
 User-agent: Googlebot
 Allow: /
+Allow: /images/
 Disallow: /admin.html
 Disallow: /login.html
 Crawl-delay: 5
 
+# Google Image
 User-agent: Googlebot-Image
 Allow: /images/
 Disallow: /admin.html
 Disallow: /login.html
 
+# Bing
 User-agent: Bingbot
 Allow: /
+Allow: /images/
 Disallow: /admin.html
 Disallow: /login.html
 Crawl-delay: 5
 
+# Yandex
 User-agent: YandexBot
 Allow: /
+Allow: /images/
 Disallow: /admin.html
 Disallow: /login.html
 Crawl-delay: 10
 
+# Baidu
 User-agent: Baiduspider
 Allow: /
+Allow: /images/
 Disallow: /admin.html
 Disallow: /login.html
 Crawl-delay: 15
 
-# Block AI data scrapers
-User-agent: ChatGPT-User
+# Block AI scrapers
+User-agent: GPTBot
 Disallow: /
 
-User-agent: GPTBot
+User-agent: ChatGPT-User
 Disallow: /
 
 User-agent: Claude-Web
 Disallow: /
 
-User-agent: FacebookBot
+User-agent: Anthropic-AI
 Disallow: /
