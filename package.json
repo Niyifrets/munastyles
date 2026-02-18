@@ -1,11 +1,24 @@
 {
-  "name": "muna-styles",
+  "name": "munastyles",
   "version": "1.0.0",
-  "description": "Muna Styles - Premium Fashion & Interior Décor",
+  "description": "Muna Styles - Premium Fashion & Décor Store in Nigeria",
+  "main": "index.html",
   "scripts": {
-    "dev": "npx serve ."
+    "dev": "echo 'Starting development server...'",
+    "build": "echo 'Building for production...'",
+    "start": "echo 'Starting production server...'"
   },
+  "keywords": [
+    "fashion",
+    "nigeria",
+    "bags",
+    "kiddies",
+    "décor",
+    "shoes"
+  ],
+  "author": "Muna Styles",
+  "license": "MIT",
   "engines": {
-    "node": ">=18"
+    "node": ">=14.0.0"
   }
 }
