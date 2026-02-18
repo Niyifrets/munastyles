@@ -64,9 +64,5 @@ const SEO_CONFIG = {
   }
 };
 
-// Export for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = SEO_CONFIG;
-} else {
-  window.SEO_CONFIG = SEO_CONFIG;
-}
+// Make available globally
+window.SEO_CONFIG = SEO_CONFIG;
