@@ -18,17 +18,15 @@ class SEOMetaManager {
   // Update page title
   static updateTitle(title) {
     document.title = title;
-    
-    // Also update Open Graph title
     this.updateMetaTag('property', 'og:title', title);
-    this.updateMetaTag('property', 'twitter:title', title);
+    this.updateMetaTag('name', 'twitter:title', title);
   }
   
   // Update meta description
   static updateDescription(description) {
     this.updateMetaTag('name', 'description', description);
     this.updateMetaTag('property', 'og:description', description);
-    this.updateMetaTag('property', 'twitter:description', description);
+    this.updateMetaTag('name', 'twitter:description', description);
   }
   
   // Update meta keywords
@@ -39,38 +37,35 @@ class SEOMetaManager {
   // Update canonical URL
   static updateCanonical(url) {
     let canonical = document.querySelector('link[rel="canonical"]');
-    
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
-    
     canonical.href = url;
   }
   
   // Update Open Graph image
   static updateImage(imageUrl) {
     this.updateMetaTag('property', 'og:image', imageUrl);
-    this.updateMetaTag('property', 'twitter:image', imageUrl);
+    this.updateMetaTag('property', 'og:image:secure_url', imageUrl);
+    this.updateMetaTag('name', 'twitter:image', imageUrl);
   }
   
   // Update Open Graph URL
   static updateURL(url) {
     this.updateMetaTag('property', 'og:url', url);
-    this.updateMetaTag('property', 'twitter:url', url);
+    this.updateMetaTag('name', 'twitter:url', url);
   }
   
   // Helper method to update/create meta tags
   static updateMetaTag(attr, attrValue, content) {
     let meta = document.querySelector(`meta[${attr}="${attrValue}"]`);
-    
     if (!meta) {
       meta = document.createElement('meta');
       meta.setAttribute(attr, attrValue);
       document.head.appendChild(meta);
     }
-    
     meta.setAttribute('content', content);
   }
   
@@ -78,7 +73,6 @@ class SEOMetaManager {
   static initPage(pageType, customData = {}) {
     const data = { ...this.defaultMeta, ...customData };
     
-    // Update basic meta tags
     this.updateTitle(data.title);
     this.updateDescription(data.description);
     this.updateKeywords(data.keywords);
@@ -86,16 +80,13 @@ class SEOMetaManager {
     this.updateImage(data.image);
     this.updateURL(data.url);
     
-    // Update Open Graph type
     this.updateMetaTag('property', 'og:type', data.type);
     this.updateMetaTag('property', 'og:site_name', data.siteName);
     this.updateMetaTag('property', 'og:locale', data.locale);
     
-    // Update Twitter cards
-    this.updateMetaTag('property', 'twitter:card', data.twitterCard);
-    this.updateMetaTag('property', 'twitter:site', data.twitterSite);
+    this.updateMetaTag('name', 'twitter:card', data.twitterCard);
+    this.updateMetaTag('name', 'twitter:site', data.twitterSite);
     
-    // Add additional meta tags
     this.addAdditionalMetaTags();
   }
   
@@ -103,17 +94,28 @@ class SEOMetaManager {
   static addAdditionalMetaTags() {
     const additionalTags = [
       { name: 'author', content: 'Muna Styles' },
-      { name: 'robots', content: 'index, follow' },
+      { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
       { name: 'googlebot', content: 'index, follow' },
       { name: 'bingbot', content: 'index, follow' },
       { name: 'geo.region', content: 'NG-LA' },
       { name: 'geo.placename', content: 'Lagos' },
       { name: 'geo.position', content: '6.524379;3.379206' },
-      { name: 'ICBM', content: '6.524379, 3.379206' }
+      { name: 'ICBM', content: '6.524379, 3.379206' },
+      { 'http-equiv': 'content-language', content: 'en' }
     ];
     
     additionalTags.forEach(tag => {
-      this.updateMetaTag('name', tag.name, tag.content);
+      if (tag.name) {
+        this.updateMetaTag('name', tag.name, tag.content);
+      } else if (tag['http-equiv']) {
+        let meta = document.querySelector(`meta[http-equiv="${tag['http-equiv']}"]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('http-equiv', tag['http-equiv']);
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', tag.content);
+      }
     });
   }
   
@@ -122,7 +124,8 @@ class SEOMetaManager {
     this.initPage('home', {
       title: 'Muna Styles | Premium Bags, Kiddies Fashion & Interior Décor in Nigeria',
       description: 'Shop premium bags, stylish kiddies fashion, elegant interior décor, and trendy shoes in Nigeria. Quality products with nationwide delivery.',
-      keywords: 'bags Nigeria, kiddies clothes Lagos, interior decoration, shoes online, fashion store Nigeria, premium handbags'
+      keywords: 'bags Nigeria, kiddies clothes Lagos, interior decoration, shoes online, fashion store Nigeria, premium handbags',
+      url: 'https://munastyles.com.ng/'
     });
   }
   
@@ -156,11 +159,11 @@ class SEOMetaManager {
     });
   }
   
-  // Initialize for product page (call this after product data loads)
+  // Initialize for product page
   static initProductPage(product) {
     const title = `${product.name} | ${product.category} | Muna Styles Nigeria`;
     const description = `Buy ${product.name} - Premium ${product.category} from Muna Styles. ${product.description || 'Quality product with nationwide delivery in Nigeria.'}`;
-    const keywords = `${product.name} Nigeria, buy ${product.category} Lagos, ${product.category} online Nigeria`;
+    const keywords = `${product.name} Nigeria, buy ${product.category} Lagos, ${product.category} online Nigeria, Muna Styles`;
     const url = `https://munastyles.com.ng/product.html?id=${product.id}`;
     
     this.initPage('product', {
@@ -168,7 +171,8 @@ class SEOMetaManager {
       description: description,
       keywords: keywords,
       url: url,
-      image: product.imageUrl || 'https://munastyles.com.ng/images/og-image.jpg'
+      image: product.imageUrl || 'https://munastyles.com.ng/images/og-image.jpg',
+      type: 'product'
     });
   }
 }
