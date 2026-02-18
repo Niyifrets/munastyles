@@ -3,8 +3,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build"
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -18,7 +22,7 @@
     },
     {
       "src": "/sitemap.xml",
-      "dest": "/api/sitemap",
+      "dest": "/sitemap.xml",
       "headers": {
         "Content-Type": "application/xml; charset=utf-8",
         "Cache-Control": "public, max-age=3600, s-maxage=86400"
@@ -26,7 +30,11 @@
     },
     {
       "src": "/api/sitemap",
-      "dest": "/api/sitemap.js"
+      "dest": "/api/sitemap.js",
+      "headers": {
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "public, max-age=3600, s-maxage=86400"
+      }
     }
   ],
   "headers": [
@@ -64,7 +72,7 @@
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/images/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -73,7 +81,7 @@
       ]
     },
     {
-      "source": "/(.*).(css|js)",
+      "source": "/js/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -82,11 +90,11 @@
       ]
     },
     {
-      "source": "/(.*).(jpg|jpeg|png|gif|ico|svg|webp)",
+      "source": "/css/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=86400"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
