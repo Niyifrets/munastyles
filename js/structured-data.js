@@ -11,7 +11,10 @@ class StructuredDataGenerator {
       "description": "Premium fashion and interior décor store in Nigeria",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://munastyles.com.ng/shop.html?search={search_term_string}",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://munastyles.com.ng/shop.html?search={search_term_string}"
+        },
         "query-input": "required name=search_term_string"
       }
     };
@@ -27,12 +30,11 @@ class StructuredDataGenerator {
       "@id": "https://munastyles.com.ng",
       "url": "https://munastyles.com.ng",
       "telephone": "+2348131553154",
+      "email": "contact@munastyles.com.ng",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Lagos",
         "addressLocality": "Lagos",
         "addressRegion": "Lagos",
-        "postalCode": "NG",
         "addressCountry": "NG"
       },
       "geo": {
@@ -43,13 +45,7 @@ class StructuredDataGenerator {
       "openingHoursSpecification": [
         {
           "@type": "OpeningHoursSpecification",
-          "dayOfWeek": [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday"
-          ],
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
           "opens": "09:00",
           "closes": "18:00"
         },
@@ -103,7 +99,6 @@ class StructuredDataGenerator {
       }
     };
     
-    // Add category if available
     if (productData.category) {
       data.category = productData.category;
     }
@@ -112,26 +107,18 @@ class StructuredDataGenerator {
   }
   
   // Generate breadcrumb structured data
-  static generateBreadcrumb(pageTitle, pageUrl) {
+  static generateBreadcrumb(items) {
     const baseUrl = "https://munastyles.com.ng";
     
     return {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": baseUrl + "/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": pageTitle,
-          "item": baseUrl + pageUrl
-        }
-      ]
+      "itemListElement": items.map((item, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": item.name,
+        "item": baseUrl + item.url
+      }))
     };
   }
   
@@ -179,7 +166,15 @@ class StructuredDataGenerator {
   
   // Insert structured data into page
   static insertStructuredData(data) {
-    // Remove any existing structured data
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(data, null, 2);
+    document.head.appendChild(script);
+  }
+  
+  // Initialize structured data for current page
+  static init(pageType = 'home', productData = null) {
+    // Clear any existing structured data (optional)
     const existingScripts = document.querySelectorAll('script[type="application/ld+json"]');
     existingScripts.forEach(script => {
       if (script.textContent.includes('schema.org')) {
@@ -187,20 +182,11 @@ class StructuredDataGenerator {
       }
     });
     
-    // Create new script element
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(data);
-    
-    // Insert into head
-    document.head.appendChild(script);
-  }
-  
-  // Initialize structured data for current page
-  static init(pageType = 'home', productData = null) {
-    // Always add website and organization data
-    this.insertStructuredData(this.generateWebsite());
+    // Add organization data to all pages
     this.insertStructuredData(this.generateOrganization());
+    
+    // Add website data to all pages
+    this.insertStructuredData(this.generateWebsite());
     
     // Add page-specific structured data
     switch(pageType) {
@@ -213,11 +199,16 @@ class StructuredDataGenerator {
         this.insertStructuredData(this.generateFAQ());
         break;
       case 'shop':
-        // Add breadcrumb for shop
-        this.insertStructuredData(this.generateBreadcrumb('Shop All', '/shop.html'));
+        this.insertStructuredData(this.generateBreadcrumb([
+          { name: 'Home', url: '/' },
+          { name: 'Shop All', url: '/shop.html' }
+        ]));
         break;
       case 'about':
-        this.insertStructuredData(this.generateBreadcrumb('About Us', '/about.html'));
+        this.insertStructuredData(this.generateBreadcrumb([
+          { name: 'Home', url: '/' },
+          { name: 'About Us', url: '/about.html' }
+        ]));
         break;
     }
   }
